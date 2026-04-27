@@ -1,4 +1,4 @@
- from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
@@ -1609,6 +1609,6 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         print("[v0] Base de datos inicializada")
-        print("[v0] Servidor iniciado en http://localhost:5000")
+        print(f"[v0] Servidor iniciado en http://localhost:{os.environ.get('PORT', 5000)}")
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
