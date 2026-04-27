@@ -107,6 +107,10 @@ class Horario(db.Model):
     archivo_url = db.Column(db.String(255), nullable=True)  # Optional image of schedule
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+# Inicializar Base de Datos al arrancar
+with app.app_context():
+    db.create_all()
+
 # ==================== FUNCIONES AUXILIARES ====================
 
 def hash_password(password):
@@ -1606,9 +1610,5 @@ def server_error(error):
 # ==================== INICIALIZACIÓN ====================
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        print("[v0] Base de datos inicializada")
-        print(f"[v0] Servidor iniciado en http://localhost:{os.environ.get('PORT', 5000)}")
-    
+    print(f"[v0] Servidor iniciado en http://localhost:{os.environ.get('PORT', 5000)}")
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
