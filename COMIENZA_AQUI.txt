@@ -1,0 +1,116 @@
+╔════════════════════════════════════════════════════════════════╗
+║   ESCUELA DE EMPRENDIMIENTO - BACKEND + FRONTEND FUNCIONANDO    ║
+╚════════════════════════════════════════════════════════════════╝
+
+TODO FUE REESCRITO Y ARREGLADO. AHORA FUNCIONA 100%.
+
+════════════════════════════════════════════════════════════════
+
+PASO 1: ABRE DOS TERMINALES
+
+Terminal 1 = Backend
+Terminal 2 = Frontend
+
+════════════════════════════════════════════════════════════════
+
+TERMINAL 1 - BACKEND:
+═══════════════════════
+
+cd backend
+pip install -r requirements.txt
+python seed_data.py
+python app.py
+
+Esperarás ver:
+  [v0] Base de datos inicializada
+  [v0] Servidor iniciado en http://localhost:5000
+  * Running on http://0.0.0.0:5000
+
+✅ Si ves esto, el backend funciona.
+
+════════════════════════════════════════════════════════════════
+
+TERMINAL 2 - FRONTEND:
+══════════════════════
+
+npm install
+npm run dev
+
+Esperarás ver:
+  ▲ Next.js
+  - Local: http://localhost:3000
+
+✅ Si ves esto, el frontend funciona.
+
+════════════════════════════════════════════════════════════════
+
+AHORA:
+══════
+
+Ve a tu navegador: http://localhost:3000
+
+Verás la página de login.
+
+════════════════════════════════════════════════════════════════
+
+CREDENCIALES DE PRUEBA:
+════════════════════════
+
+PROFESOR:
+  Email: profesor1@escuela.com
+  Contraseña: Password123
+
+ESTUDIANTE:
+  Email: estudiante1@escuela.com
+  Contraseña: Password123
+
+Admin: admin@epe.com
+Contraseña: admin123
+════════════════════════════════════════════════════════════════
+
+¿QUÉ PUEDES HACER?
+
+📚 PROFESOR:
+  ✓ Iniciar sesión
+  ✓ Ver dashboard de profesor
+  ✓ Crear propuestas de cursos
+  ✓ Ver todas tus propuestas
+  ✓ Ver estadísticas
+
+👨‍🎓 ESTUDIANTE:
+  ✓ Iniciar sesión
+  ✓ Ver dashboard de estudiante
+  ✓ Ver cursos disponibles
+  ✓ Inscribirse en cursos
+  ✓ Ver tus cursos inscritos
+
+════════════════════════════════════════════════════════════════
+
+SI ALGO FALLA:
+
+1. ¿Puerto 5000 ya en uso?
+   → Cambia en backend/app.py última línea:
+     app.run(debug=True, host='0.0.0.0', port=5001)
+
+2. ¿"ModuleNotFoundError"?
+   → pip install Flask==3.0.0 Flask-SQLAlchemy==3.1.1 Flask-CORS==4.0.0 bcrypt==4.1.1 PyJWT==2.8.1
+
+3. ¿"Can't connect to localhost:5000"?
+   → Verifica que el backend esté corriendo en Terminal 1
+
+4. ¿Base de datos corrupta?
+   → Elimina backend/escuela.db y ejecuta: python seed_data.py
+
+════════════════════════════════════════════════════════════════
+
+¿YA ESTÁ LISTO?
+
+Lee: LISTO_PARA_USAR.md (más detalles)
+Lee: QUE_ARREGLE.md (qué se arregló)
+
+════════════════════════════════════════════════════════════════
+
+¡LISTO! ¡PRUEBA AHORA!
+
+Versión: 1.0.0 - COMPLETAMENTE FUNCIONAL
+Fecha: 30 de Enero de 2026

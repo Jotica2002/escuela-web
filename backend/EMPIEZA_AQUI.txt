@@ -1,0 +1,62 @@
+ESCUELA DE EMPRENDIMIENTO - BACKEND SIMPLE
+=============================================
+
+PASO 1: INSTALAR DEPENDENCIAS
+==============================
+cd backend
+pip install -r requirements.txt
+
+PASO 2: CARGAR DATOS DE PRUEBA (opcional)
+==========================================
+python seed_data.py
+
+PASO 3: INICIAR EL SERVIDOR
+=============================
+python app.py
+
+El servidor estará en: http://localhost:5000
+
+CREDENCIALES DE PRUEBA
+======================
+Profesor:
+  Email: profesor1@escuela.com
+  Password: Password123
+
+Estudiante:
+  Email: estudiante1@escuela.com
+  Password: Password123
+
+ENDPOINTS
+=========
+POST   /api/auth/signup         - Registrarse
+POST   /api/auth/login          - Iniciar sesión
+GET    /api/auth/me             - Obtener usuario actual
+GET    /api/cursos              - Listar cursos
+POST   /api/estudiante/inscribirse/<id>  - Inscribirse en curso
+GET    /api/estudiante/cursos   - Mis cursos
+POST   /api/profesor/propuestas - Crear propuesta
+GET    /api/profesor/propuestas - Mis propuestas
+GET    /api/estadisticas/propuestas - Estadísticas
+
+EJEMPLO DE LOGIN (cURL):
+=======================
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "profesor1@escuela.com",
+    "password": "Password123"
+  }'
+
+PROBLEMAS COMUNES
+==================
+✓ "ModuleNotFoundError: No module named 'flask'"
+  → Ejecuta: pip install -r requirements.txt
+
+✓ "Address already in use"
+  → El puerto 5000 ya está en uso. Cambia en app.py la línea:
+    app.run(debug=True, host='0.0.0.0', port=5001)
+
+✓ "database is locked"
+  → Elimina escuela.db y ejecuta seed_data.py de nuevo
+
+¿LISTO? ¡Empieza el servidor y ve al frontend!

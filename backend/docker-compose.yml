@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: escuela_db
+    environment:
+      POSTGRES_DB: escuela_db
+      POSTGRES_USER: escuela_user
+      POSTGRES_PASSWORD: escuela_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - escuela_network
+
+  backend:
+    build: .
+    container_name: escuela_backend
+    environment:
+      FLASK_APP: app.py
+      FLASK_ENV: development
+      DATABASE_URL: postgresql://escuela_user:escuela_password@db:5432/escuela_db
+      JWT_SECRET_KEY: tu-jwt-secret-cambiar-en-produccion
+      SECRET_KEY: tu-clave-secreta-cambiar-en-produccion
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    networks:
+      - escuela_network
+    command: python app.py
+
+volumes:
+  postgres_data:
+
+networks:
+  escuela_network:
+    driver: bridge
