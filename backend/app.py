@@ -107,6 +107,14 @@ class Horario(db.Model):
     archivo_url = db.Column(db.String(255), nullable=True)  # Optional image of schedule
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+# ==================== FUNCIONES AUXILIARES ====================
+
+def hash_password(password):
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+def verify_password(password, password_hash):
+    return bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8'))
+
 # Inicializar Base de Datos al arrancar
 with app.app_context():
     db.create_all()
@@ -125,14 +133,6 @@ with app.app_context():
         db.session.add(new_admin)
         db.session.commit()
         print("[v0] Usuario admin creado exitosamente")
-
-# ==================== FUNCIONES AUXILIARES ====================
-
-def hash_password(password):
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-def verify_password(password, password_hash):
-    return bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8'))
 
 def create_token(usuario_id, rol):
     payload = {
