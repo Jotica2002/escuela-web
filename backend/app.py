@@ -616,14 +616,18 @@ def get_teacher_estadisticas():
     if not payload or payload['rol'] not in ['teacher', 'profesor']:
         return jsonify({'error': 'Acceso denegado'}), 403
         
-    propuestas_totales = PropuestaCurso.query.filter_by(profesor_id=payload['id']).count()
-    propuestas_pendientes = PropuestaCurso.query.filter_by(profesor_id=payload['id'], estado='pendiente').count()
-    propuestas_aprobadas = PropuestaCurso.query.filter_by(profesor_id=payload['id'], estado='aprobado').count()
+    cursos_totales = Curso.query.filter_by(profesor_id=payload['id']).count()
+    
+    # Estudiantes totales (inscripciones en sus cursos)
+    mis_cursos_ids = [c.id for c in Curso.query.filter_by(profesor_id=payload['id']).all()]
+    estudiantes_totales = Inscripcion.query.filter(Inscripcion.curso_id.in_(mis_cursos_ids)).count() if mis_cursos_ids else 0
+    
+    asistencias_totales = Asistencia.query.filter_by(profesor_id=payload['id']).count()
     
     return jsonify({
-        'total': propuestas_totales,
-        'pendientes': propuestas_pendientes,
-        'aprobadas': propuestas_aprobadas
+        'cursos': cursos_totales,
+        'estudiantes': estudiantes_totales,
+        'asistencias': asistencias_totales
     }), 200
 
 # --- ASISTENCIAS ---

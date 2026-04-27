@@ -8,9 +8,9 @@ import { api } from '@/lib/api';
 import { BookOpen, CheckCircle, FileSignature } from 'lucide-react';
 
 interface Stats {
-  total: number;
-  pendientes: number;
-  aprobadas: number;
+  cursos: number;
+  estudiantes: number;
+  asistencias: number;
 }
 
 export default function TeacherHomePage() {
@@ -22,7 +22,7 @@ export default function TeacherHomePage() {
     const loadStats = async () => {
       try {
         // Temporary stub since getEstadisticas might not return exactly {total, pendientes, aprobadas} yet
-        const data = await api.getEstadisticas().catch(() => ({ total: 0, pendientes: 0, aprobadas: 0 }));
+        const data = await api.getEstadisticas().catch(() => ({ cursos: 0, estudiantes: 0, asistencias: 0 }));
         setStats(data);
       } catch (error) {
         console.error("Failed to fetch stats", error);
@@ -41,7 +41,7 @@ export default function TeacherHomePage() {
           ¡Bienvenido, Profesor {user?.nombre?.split(' ')[0] || ''}!
         </h1>
         <p className="text-gray-500 text-lg">
-          Este es tu panel de control. Desde aquí puedes gestionar tus cursos y propuestas académicas.
+          Este es tu panel de control. Desde aquí puedes gestionar tus cursos, horarios y asistencias.
         </p>
       </header>
 
@@ -64,32 +64,32 @@ export default function TeacherHomePage() {
                   <BookOpen size={32} />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">Propuestas</p>
-                  <p className="text-4xl font-extrabold text-gray-900">{stats?.total || 0}</p>
+                  <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">Cursos Activos</p>
+                  <p className="text-4xl font-extrabold text-gray-900">{stats?.cursos || 0}</p>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 border-none rounded-xl overflow-hidden group py-6">
               <CardContent className="flex items-center gap-6 p-6">
-                <div className="p-4 bg-orange-50 text-[#f97316] rounded-2xl group-hover:scale-110 transition-transform flex-shrink-0">
-                  <FileSignature size={32} />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">En Revisión</p>
-                  <p className="text-4xl font-extrabold text-gray-900">{stats?.pendientes || 0}</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 border-none rounded-xl overflow-hidden group py-6">
-              <CardContent className="flex items-center gap-6 p-6">
-                <div className="p-4 bg-green-50 text-green-600 rounded-2xl group-hover:scale-110 transition-transform flex-shrink-0">
+                <div className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl group-hover:scale-110 transition-transform flex-shrink-0">
                   <CheckCircle size={32} />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">Aprobadas</p>
-                  <p className="text-4xl font-extrabold text-gray-900">{stats?.aprobadas || 0}</p>
+                  <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">Estudiantes Totales</p>
+                  <p className="text-4xl font-extrabold text-gray-900">{stats?.estudiantes || 0}</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 border-none rounded-xl overflow-hidden group py-6">
+              <CardContent className="flex items-center gap-6 p-6">
+                <div className="p-4 bg-purple-50 text-purple-600 rounded-2xl group-hover:scale-110 transition-transform flex-shrink-0">
+                  <FileSignature size={32} />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">Asistencias Subidas</p>
+                  <p className="text-4xl font-extrabold text-gray-900">{stats?.asistencias || 0}</p>
                 </div>
               </CardContent>
             </Card>
