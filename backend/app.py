@@ -110,6 +110,21 @@ class Horario(db.Model):
 # Inicializar Base de Datos al arrancar
 with app.app_context():
     db.create_all()
+    
+    # Crear admin por defecto si no existe
+    admin = Usuario.query.filter_by(email='admin@escuela.com').first()
+    if not admin:
+        admin_pass = hash_password('admin123')
+        new_admin = Usuario(
+            nombre='Administrador',
+            email='admin@escuela.com',
+            password_hash=admin_pass,
+            rol='admin',
+            cedula='ADMIN-01'
+        )
+        db.session.add(new_admin)
+        db.session.commit()
+        print("[v0] Usuario admin creado exitosamente")
 
 # ==================== FUNCIONES AUXILIARES ====================
 
