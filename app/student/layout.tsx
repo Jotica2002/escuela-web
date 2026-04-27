@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { MEDIA_URL } from '@/lib/api';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import {
     LayoutDashboard,
@@ -67,7 +68,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white overflow-hidden border-2 border-white shadow-sm">
                                 {user?.foto_perfil ? (
-                                    <img src={`http://127.0.0.1:5000${user.foto_perfil}`} alt="Profile" className="w-full h-full object-cover" />
+                                    <img src={`${MEDIA_URL}${user.foto_perfil}`} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
                                     <User size={18} />
                                 )}

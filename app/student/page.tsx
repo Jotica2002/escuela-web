@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { ChatbotFAQ } from '@/components/ChatbotFAQ';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { api } from '@/lib/api';
+import { api, MEDIA_URL } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface StudentProfile {
@@ -45,7 +45,7 @@ export default function StudentDashboard() {
           <div className="w-20 h-20 bg-[#1e3a8a] rounded-full flex items-center justify-center text-white flex-shrink-0 shadow-lg overflow-hidden border-4 border-white">
             {user?.foto_perfil ? (
               <img
-                src={`http://127.0.0.1:5000${user.foto_perfil}`}
+                src={`${MEDIA_URL}${user.foto_perfil}`}
                 alt="Profile"
                 className="w-full h-full object-cover"
               />

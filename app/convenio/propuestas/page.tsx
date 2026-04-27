@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { api } from '@/lib/api';
+import { api, MEDIA_URL } from '@/lib/api';
 import { toast } from 'sonner';
 import { ThumbsUp, X, ListChecks, Pencil } from 'lucide-react';
 
@@ -177,7 +177,7 @@ export default function ConvenioPropuestasPage() {
                                         {p.imagen_url && (
                                             <div className="mb-4">
                                                 <img 
-                                                    src={`http://127.0.0.1:5000/uploads/${p.imagen_url}`} 
+                                                    src={`${MEDIA_URL}/uploads/${p.imagen_url}`} 
                                                     alt={p.titulo} 
                                                     className="w-full max-h-48 object-cover rounded-xl shadow-sm"
                                                 />

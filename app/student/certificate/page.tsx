@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { FileBadge, Download } from 'lucide-react';
-import { api } from '@/lib/api';
+import { api, MEDIA_URL } from '@/lib/api';
 import { toast } from 'sonner';
 
 interface Certificado {
@@ -82,7 +82,7 @@ export default function CertificatesPage() {
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <a 
-                                            href={`http://127.0.0.1:5000${cert.archivo_url}`} 
+                                            href={`${MEDIA_URL}${cert.archivo_url}`} 
                                             target="_blank" 
                                             rel="noopener noreferrer"
                                             className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-[#1e3a8a] hover:bg-blue-100 font-medium rounded-lg transition-colors"

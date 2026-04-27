@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { api } from '@/lib/api';
+import { api, MEDIA_URL } from '@/lib/api';
 import { FileUp, Calendar as CalendarIcon, Trash2, Camera, Download, FileImage } from 'lucide-react';
 import Image from 'next/image';
 
@@ -220,7 +220,7 @@ export default function AsistenciasPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {asistencias.map((asist) => {
                                 const isImage = asist.archivo_url.match(/\.(jpeg|jpg|gif|png)$/i) != null;
-                                const urlCompleta = `http://127.0.0.1:5000${asist.archivo_url}`;
+                                const urlCompleta = `${MEDIA_URL}${asist.archivo_url}`;
                                 
                                 return (
                                     <Card key={asist.id} className="overflow-hidden group hover:shadow-md transition-shadow">

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { BookX, CheckCircle, CalendarDays, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
-import { api } from '@/lib/api';
+import { api, MEDIA_URL } from '@/lib/api';
 
 interface Enrollment {
     inscripcion_id: number;
@@ -67,12 +67,12 @@ function HorarioSection({ cursoId }: { cursoId: number }) {
                             {horario.archivo_url && (
                                 <div className="space-y-2">
                                     <img
-                                        src={`http://127.0.0.1:5000${horario.archivo_url}`}
+                                        src={`${MEDIA_URL}${horario.archivo_url}`}
                                         alt="Horario del curso"
                                         className="max-h-48 rounded-lg border border-blue-200 object-contain w-full bg-white"
                                     />
                                     <a
-                                        href={`http://127.0.0.1:5000${horario.archivo_url}`}
+                                        href={`${MEDIA_URL}${horario.archivo_url}`}
                                         target="_blank"
                                         rel="noreferrer"
                                         className="text-xs text-blue-600 underline flex items-center gap-1"
@@ -150,7 +150,7 @@ export default function MyCoursesPage() {
                             {enrollment.curso.imagen_url ? (
                                 <div className="h-40 w-full overflow-hidden border-b border-gray-100 shrink-0">
                                     <img 
-                                        src={`http://127.0.0.1:5000/uploads/${enrollment.curso.imagen_url}`} 
+                                        src={`${MEDIA_URL}/uploads/${enrollment.curso.imagen_url}`} 
                                         alt={enrollment.curso.nombre} 
                                         className="w-full h-full object-cover"
                                     />

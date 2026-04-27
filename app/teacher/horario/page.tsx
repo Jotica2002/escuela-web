@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { api } from '@/lib/api';
+import { api, MEDIA_URL } from '@/lib/api';
 import { CalendarDays, Save, ExternalLink, Image as ImageIcon } from 'lucide-react';
 
 interface Curso {
@@ -161,7 +161,7 @@ export default function HorarioPage() {
                                     <ImageIcon size={14} />
                                     <span className="font-medium">Imagen adjunta:</span>
                                     <a
-                                        href={`http://127.0.0.1:5000${currentHorario.archivo_url}`}
+                                        href={`${MEDIA_URL}${currentHorario.archivo_url}`}
                                         target="_blank"
                                         rel="noreferrer"
                                         className="text-blue-600 underline flex items-center gap-1 hover:text-blue-800"
@@ -170,7 +170,7 @@ export default function HorarioPage() {
                                     </a>
                                 </div>
                                 <img
-                                    src={`http://127.0.0.1:5000${currentHorario.archivo_url}`}
+                                    src={`${MEDIA_URL}${currentHorario.archivo_url}`}
                                     alt="Horario del curso"
                                     className="max-h-64 rounded-lg border border-blue-100 object-contain w-full bg-white"
                                 />

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
-import { api } from '@/lib/api';
+import { api, MEDIA_URL } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { User, Camera, Mail, GraduationCap } from 'lucide-react';
 import Image from 'next/image';
 
-const API_BASE_URL = 'http://127.0.0.1:5000';
+const API_BASE_URL = MEDIA_URL;
 
 export default function TeacherProfilePage() {
     const { user, updateUser } = useAuth();
