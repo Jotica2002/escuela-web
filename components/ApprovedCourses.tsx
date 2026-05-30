@@ -37,6 +37,13 @@ export function ApprovedCourses({ onCourseUpdated }: ApprovedCoursesProps) {
   const [editImagen, setEditImagen] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
+  // View modals state
+  const [viewingHorarioCurso, setViewingHorarioCurso] = useState<Curso | null>(null);
+  const [viewingAsistenciasCurso, setViewingAsistenciasCurso] = useState<Curso | null>(null);
+  const [horario, setHorario] = useState<any>(null);
+  const [asistencias, setAsistencias] = useState<any[]>([]);
+  const [loadingData, setLoadingData] = useState(false);
+
   useEffect(() => {
     cargarCursos();
   }, []);
@@ -57,6 +64,34 @@ export function ApprovedCourses({ onCourseUpdated }: ApprovedCoursesProps) {
     setEditingCurso(curso);
     setEditForm({ nombre: curso.nombre, descripcion: curso.descripcion || '', duracion: curso.duracion || '' });
     setEditImagen(null);
+  };
+
+  const openHorario = async (curso: Curso) => {
+    setViewingHorarioCurso(curso);
+    setLoadingData(true);
+    setHorario(null);
+    try {
+      const data = await api.getHorarioCurso(curso.id);
+      setHorario(data);
+    } catch (err: any) {
+      toast.error('Error al cargar el horario');
+    } finally {
+      setLoadingData(false);
+    }
+  };
+
+  const openAsistencias = async (curso: Curso) => {
+    setViewingAsistenciasCurso(curso);
+    setLoadingData(true);
+    setAsistencias([]);
+    try {
+      const data = await api.getAsistenciasCurso(curso.id);
+      setAsistencias(data);
+    } catch (err: any) {
+      toast.error('Error al cargar las asistencias');
+    } finally {
+      setLoadingData(false);
+    }
   };
 
   const handleDelete = async (cursoId: number) => {
@@ -230,6 +265,14 @@ export function ApprovedCourses({ onCourseUpdated }: ApprovedCoursesProps) {
                           <span><strong>Instructor:</strong> {curso.profesor_nombre}</span>
                         </div>
                       </div>
+                      <div className="pt-3 flex flex-wrap gap-3 border-t border-gray-100">
+                        <Button variant="outline" size="sm" onClick={() => openHorario(curso)} className="flex items-center gap-2">
+                          <Calendar size={14} /> Ver Horario
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => openAsistencias(curso)} className="flex items-center gap-2">
+                          <Users size={14} /> Ver Asistencias
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </Card>
@@ -238,6 +281,91 @@ export function ApprovedCourses({ onCourseUpdated }: ApprovedCoursesProps) {
           )}
         </div>
       </div>
+
+      {/* Horario Modal */}
+      {viewingHorarioCurso && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <Calendar size={18} className="text-blue-600" /> Horario: {viewingHorarioCurso.nombre}
+              </h2>
+              <button onClick={() => setViewingHorarioCurso(null)} className="text-gray-400 hover:text-gray-700">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="min-h-[100px]">
+              {loadingData ? (
+                <div className="text-center text-gray-500 py-4">Cargando horario...</div>
+              ) : !horario ? (
+                <div className="text-center text-gray-500 py-4">El profesor no ha subido un horario aún.</div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="p-3 bg-blue-50 rounded-lg text-sm text-gray-800 whitespace-pre-wrap">
+                    {horario.descripcion}
+                  </div>
+                  {horario.archivo_url && (
+                    <div className="mt-3">
+                      <a href={`http://127.0.0.1:5000/uploads/${horario.archivo_url}`} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline text-sm font-medium">
+                        Ver archivo adjunto
+                      </a>
+                    </div>
+                  )}
+                  <p className="text-xs text-gray-400 text-right">Actualizado: {new Date(horario.fecha_actualizacion).toLocaleDateString('es-ES')}</p>
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end pt-2">
+              <Button onClick={() => setViewingHorarioCurso(null)}>Cerrar</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Asistencias Modal */}
+      {viewingAsistenciasCurso && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-5 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between shrink-0">
+              <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <Users size={18} className="text-blue-600" /> Asistencias
+              </h2>
+              <button onClick={() => setViewingAsistenciasCurso(null)} className="text-gray-400 hover:text-gray-700">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              {loadingData ? (
+                <div className="text-center text-gray-500 py-4">Cargando asistencias...</div>
+              ) : asistencias.length === 0 ? (
+                <div className="text-center text-gray-500 py-4">No hay listas de asistencia subidas.</div>
+              ) : (
+                <div className="space-y-3 pr-2">
+                  {asistencias.map((asist, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                      <div>
+                        <p className="font-semibold text-sm">Clase del {new Date(asist.fecha_clase).toLocaleDateString('es-ES')}</p>
+                        <p className="text-xs text-gray-500">Subida: {new Date(asist.fecha_subida).toLocaleDateString('es-ES')}</p>
+                      </div>
+                      <a 
+                        href={`http://127.0.0.1:5000/uploads/${asist.archivo_url}`} 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="text-xs bg-blue-100 text-blue-700 px-3 py-1.5 rounded-md hover:bg-blue-200 transition-colors font-medium"
+                      >
+                        Descargar
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end pt-2 shrink-0">
+              <Button onClick={() => setViewingAsistenciasCurso(null)}>Cerrar</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
