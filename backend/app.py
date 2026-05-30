@@ -396,6 +396,26 @@ def enroll_course():
     
     return jsonify({'message': 'Inscripción exitosa', 'inscripcion_id': nueva_inscripcion.id}), 201
 
+@app.route('/api/student/unenroll/<int:curso_id>', methods=['DELETE'])
+def unenroll_course(curso_id):
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not token: return jsonify({'error': 'Token requerido'}), 401
+    payload = verify_token(token)
+    if not payload: return jsonify({'error': 'Token inválido'}), 401
+    
+    usuario = Usuario.query.get(payload['id'])
+    if not usuario or usuario.rol != 'student':
+        return jsonify({'error': 'No autorizado'}), 403
+        
+    inscripcion = Inscripcion.query.filter_by(estudiante_id=usuario.id, curso_id=curso_id).first()
+    if not inscripcion:
+        return jsonify({'error': 'No estás inscrito en este curso'}), 404
+        
+    db.session.delete(inscripcion)
+    db.session.commit()
+    
+    return jsonify({'message': 'Curso abandonado exitosamente'}), 200
+
 @app.route('/api/student/my-enrollments', methods=['GET'])
 def list_my_enrollments():
     token = request.headers.get('Authorization', '').replace('Bearer ', '')

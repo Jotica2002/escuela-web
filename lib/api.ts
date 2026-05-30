@@ -52,6 +52,14 @@ export const api = {
     return handleResponse(response);
   },
 
+  unenrollCourse: async (cursoId: number | string) => {
+    const response = await fetch(`${BASE_URL}/student/unenroll/${cursoId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+  },
+
   getMyEnrollments: async () => {
     const response = await fetch(`${BASE_URL}/student/my-enrollments`, {
       headers: getAuthHeaders(),

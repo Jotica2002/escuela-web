@@ -96,6 +96,17 @@ export default function MyCoursesPage() {
     const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    const handleUnenroll = async (cursoId: number) => {
+        if (!window.confirm("¿Estás seguro de que quieres abandonar este curso?")) return;
+        try {
+            await api.unenrollCourse(cursoId);
+            setEnrollments(prev => prev.filter(e => e.curso.id !== cursoId));
+        } catch (error) {
+            console.error("Error al abandonar curso", error);
+            alert("Hubo un error al abandonar el curso.");
+        }
+    };
+
     useEffect(() => {
         const fetchEnrollments = async () => {
             try {
@@ -167,9 +178,19 @@ export default function MyCoursesPage() {
                                         {enrollment.curso.descripcion}
                                     </p>
                                 )}
-                                <div className="flex items-center text-sm font-medium text-green-600 bg-green-50 px-3 py-1.5 rounded-lg w-fit">
-                                    <CheckCircle size={16} className="mr-2" />
-                                    Inscrito
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center text-sm font-medium text-green-600 bg-green-50 px-3 py-1.5 rounded-lg w-fit">
+                                        <CheckCircle size={16} className="mr-2" />
+                                        Inscrito
+                                    </div>
+                                    <Button 
+                                        variant="destructive" 
+                                        size="sm" 
+                                        onClick={() => handleUnenroll(enrollment.curso.id)}
+                                        className="bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 border border-red-200"
+                                    >
+                                        Abandonar curso
+                                    </Button>
                                 </div>
                                 {/* Horario section — lazy loaded on expand */}
                                 <HorarioSection cursoId={enrollment.curso.id} />
