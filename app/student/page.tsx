@@ -22,10 +22,19 @@ export default function StudentDashboard() {
     const loadData = async () => {
       try {
         if (user) {
+          // Fetch the real enrollment count from the backend
+          let cursosInscritos = 0;
+          try {
+            const enrollments = await api.getMyEnrollments();
+            cursosInscritos = Array.isArray(enrollments) ? enrollments.length : 0;
+          } catch {
+            cursosInscritos = 0;
+          }
+
           setProfile({
             nombre: user.nombre,
             email: user.email,
-            cursosInscritos: 0,
+            cursosInscritos,
           });
         }
       } catch (error) {
