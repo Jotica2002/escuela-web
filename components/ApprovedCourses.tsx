@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Clock, BookOpen, Pencil, X, ChevronDown, ChevronUp, Users, Calendar } from 'lucide-react';
+import { Clock, BookOpen, Pencil, X, ChevronDown, ChevronUp, Users, Calendar, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Curso {
@@ -57,6 +57,18 @@ export function ApprovedCourses({ onCourseUpdated }: ApprovedCoursesProps) {
     setEditingCurso(curso);
     setEditForm({ nombre: curso.nombre, descripcion: curso.descripcion || '', duracion: curso.duracion || '' });
     setEditImagen(null);
+  };
+
+  const handleDelete = async (cursoId: number) => {
+    if (!window.confirm("¿Estás seguro de que quieres eliminar este curso? Esta acción no se puede deshacer.")) return;
+    try {
+      await api.adminEliminarCurso(cursoId);
+      toast.success('Curso eliminado correctamente');
+      await cargarCursos();
+      onCourseUpdated?.();
+    } catch (err: any) {
+      toast.error(err.message || 'Error al eliminar curso');
+    }
   };
 
   const handleSaveEdit = async () => {
@@ -170,6 +182,13 @@ export function ApprovedCourses({ onCourseUpdated }: ApprovedCoursesProps) {
                         className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                       >
                         <Pencil size={15} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(curso.id)}
+                        title="Eliminar curso"
+                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 size={15} />
                       </button>
                       <button
                         onClick={() => setExpandedId(isExpanded ? null : curso.id)}

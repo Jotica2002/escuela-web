@@ -1001,6 +1001,21 @@ def admin_cursos():
         'fecha_creacion': c.fecha_creacion.isoformat()
     } for c in cursos]), 200
 
+@app.route('/api/admin/cursos/<int:curso_id>', methods=['DELETE'])
+def admin_eliminar_curso(curso_id):
+    """DELETE /api/admin/cursos/<id> - Solo admin. Elimina (soft delete) un curso."""
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not token: return jsonify({'error': 'Token requerido'}), 401
+    payload = verify_token(token)
+    if not payload or payload['rol'] != 'admin': return jsonify({'error': 'No autorizado'}), 403
+
+    curso = Curso.query.get(curso_id)
+    if not curso: return jsonify({'error': 'Curso no encontrado'}), 404
+
+    curso.estado = 'inactivo'
+    db.session.commit()
+    return jsonify({'message': 'Curso eliminado correctamente'}), 200
+
 @app.route('/api/admin/cursos/<int:curso_id>', methods=['PUT'])
 def admin_editar_curso(curso_id):
     """PUT /api/admin/cursos/<id> - Solo admin. Edita nombre/descripción/duración de un curso."""

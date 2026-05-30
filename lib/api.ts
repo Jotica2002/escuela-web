@@ -386,6 +386,14 @@ export const api = {
     return handleResponse(response);
   },
 
+  adminEliminarCurso: async (cursoId: number) => {
+    const response = await fetch(`${BASE_URL}/admin/cursos/${cursoId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+  },
+
   convenioEditarPropuesta: async (propuestaId: number, formData: FormData) => {
     const headers = getAuthHeaders();
     delete headers['Content-Type'];
