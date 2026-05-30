@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { api } from '@/lib/api';
+import { api, MEDIA_URL } from '@/lib/api';
 
 interface CourseCardProps {
   id: string;
@@ -35,7 +35,7 @@ export function CourseCard({ id, nombre, descripcion, imagen_url, onInscribe }: 
       {imagen_url ? (
         <div className="h-48 w-full shrink-0 overflow-hidden">
             <img 
-              src={`http://127.0.0.1:5000/uploads/${imagen_url}`} 
+              src={`${MEDIA_URL}/uploads/${imagen_url}`} 
               alt={nombre} 
               className="w-full h-full object-cover"
             />

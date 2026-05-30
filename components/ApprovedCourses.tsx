@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { api } from '@/lib/api';
+import { api, MEDIA_URL } from '@/lib/api';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -241,7 +241,7 @@ export function ApprovedCourses({ onCourseUpdated }: ApprovedCoursesProps) {
                       {curso.imagen_url && (
                         <div className="mb-4">
                           <img 
-                            src={`http://127.0.0.1:5000/uploads/${curso.imagen_url}`} 
+                            src={`${MEDIA_URL}/uploads/${curso.imagen_url}`} 
                             alt={curso.nombre} 
                             className="w-full max-h-48 object-cover rounded-xl shadow-sm"
                           />
@@ -306,7 +306,7 @@ export function ApprovedCourses({ onCourseUpdated }: ApprovedCoursesProps) {
                   </div>
                   {horario.archivo_url && (
                     <div className="mt-3">
-                      <a href={`http://127.0.0.1:5000/uploads/${horario.archivo_url}`} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline text-sm font-medium">
+                      <a href={`${MEDIA_URL}/uploads/${horario.archivo_url}`} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline text-sm font-medium">
                         Ver archivo adjunto
                       </a>
                     </div>
@@ -348,7 +348,7 @@ export function ApprovedCourses({ onCourseUpdated }: ApprovedCoursesProps) {
                         <p className="text-xs text-gray-500">Subida: {new Date(asist.fecha_subida).toLocaleDateString('es-ES')}</p>
                       </div>
                       <a 
-                        href={`http://127.0.0.1:5000/uploads/${asist.archivo_url}`} 
+                        href={`${MEDIA_URL}/uploads/${asist.archivo_url}`} 
                         target="_blank" 
                         rel="noreferrer"
                         className="text-xs bg-blue-100 text-blue-700 px-3 py-1.5 rounded-md hover:bg-blue-200 transition-colors font-medium"
