@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import api from '@/lib/api';
+import { api } from '@/lib/api';
 import { FileText, Plus, X, Building2, CheckCircle2, Clock } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
