@@ -93,6 +93,16 @@ class Certificado(db.Model):
     archivo_url = db.Column(db.String(255), nullable=False)
     fecha_subida = db.Column(db.DateTime, default=datetime.utcnow)
 
+class SolicitudCertificado(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    estudiante_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    profesion = db.Column(db.String(100), nullable=False)
+    experiencia = db.Column(db.Text, nullable=False)
+    email_contacto = db.Column(db.String(120), nullable=False)
+    archivo_evidencia_url = db.Column(db.String(255), nullable=True)
+    estado = db.Column(db.String(20), default='pendiente') # 'pendiente', 'aprobada', 'rechazada'
+    fecha_solicitud = db.Column(db.DateTime, default=datetime.utcnow)
+
 class Asistencia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     curso_id = db.Column(db.Integer, db.ForeignKey('curso.id'), nullable=False)
@@ -1696,6 +1706,88 @@ def get_my_certificates():
         'archivo_url': c.archivo_url,
         'fecha_subida': c.fecha_subida.isoformat()
     } for c in certificados]), 200
+
+# ==================== SOLICITUD DE CERTIFICADOS (EXPERIENCIA) ====================
+
+@app.route('/api/student/certificados/solicitar', methods=['POST'])
+def solicitar_certificado_experiencia():
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not token: return jsonify({'error': 'Token requerido'}), 401
+    payload = verify_token(token)
+    if not payload or payload['rol'] != 'student': return jsonify({'error': 'No autorizado'}), 403
+
+    profesion = request.form.get('profesion')
+    experiencia = request.form.get('experiencia')
+    email_contacto = request.form.get('email_contacto')
+
+    if not profesion or not experiencia or not email_contacto:
+        return jsonify({'error': 'Faltan campos obligatorios'}), 400
+
+    archivo_url = None
+    if 'file' in request.files:
+        file = request.files['file']
+        if file.filename != '':
+            filename = secure_filename(file.filename)
+            unique_filename = f"evidencia_{int(time.time())}_{filename}"
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            file.save(file_path)
+            archivo_url = unique_filename
+
+    nueva_solicitud = SolicitudCertificado(
+        estudiante_id=payload['id'],
+        profesion=profesion,
+        experiencia=experiencia,
+        email_contacto=email_contacto,
+        archivo_evidencia_url=archivo_url
+    )
+    db.session.add(nueva_solicitud)
+    db.session.commit()
+
+    return jsonify({'message': 'Solicitud enviada correctamente'}), 201
+
+@app.route('/api/admin/certificados/solicitudes', methods=['GET'])
+def get_admin_solicitudes_certificados():
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not token: return jsonify({'error': 'Token requerido'}), 401
+    payload = verify_token(token)
+    if not payload or payload['rol'] != 'admin': return jsonify({'error': 'No autorizado'}), 403
+
+    solicitudes = SolicitudCertificado.query.order_by(SolicitudCertificado.fecha_solicitud.desc()).all()
+    result = []
+    for s in solicitudes:
+        est = Usuario.query.get(s.estudiante_id)
+        result.append({
+            'id': s.id,
+            'estudiante_id': s.estudiante_id,
+            'estudiante_nombre': est.nombre if est else 'Desconocido',
+            'estudiante_cedula': est.cedula if est else '',
+            'profesion': s.profesion,
+            'experiencia': s.experiencia,
+            'email_contacto': s.email_contacto,
+            'archivo_evidencia_url': s.archivo_evidencia_url,
+            'estado': s.estado,
+            'fecha_solicitud': s.fecha_solicitud.isoformat()
+        })
+    return jsonify(result), 200
+
+@app.route('/api/admin/certificados/solicitudes/<int:id>/estado', methods=['PUT'])
+def update_estado_solicitud_certificado(id):
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not token: return jsonify({'error': 'Token requerido'}), 401
+    payload = verify_token(token)
+    if not payload or payload['rol'] != 'admin': return jsonify({'error': 'No autorizado'}), 403
+
+    solicitud = SolicitudCertificado.query.get(id)
+    if not solicitud:
+        return jsonify({'error': 'Solicitud no encontrada'}), 404
+
+    data = request.get_json()
+    if 'estado' in data:
+        solicitud.estado = data['estado']
+        db.session.commit()
+        return jsonify({'message': 'Estado actualizado'}), 200
+    
+    return jsonify({'error': 'Estado no proporcionado'}), 400
 
 # ==================== ERROR HANDLERS ====================
 

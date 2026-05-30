@@ -433,5 +433,42 @@ export const api = {
     });
     return handleResponse(response);
   },
+
+  // ========== SOLICITUDES DE CERTIFICADO POR EXPERIENCIA ==========
+  studentSolicitarCertificado: async (formData: FormData) => {
+    const headers = getAuthHeaders();
+    delete headers['Content-Type'];
+    const response = await fetch(`${BASE_URL}/student/certificados/solicitar`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+    return handleResponse(response);
+  },
+
+  getAdminSolicitudesCertificados: async () => {
+    const response = await fetch(`${BASE_URL}/admin/certificados/solicitudes`, {
+      headers: getAuthHeaders(),
+      cache: 'no-store',
+    });
+    return handleResponse(response);
+  },
+
+  updateAdminSolicitudEstado: async (id: number, estado: string) => {
+    const response = await fetch(`${BASE_URL}/admin/certificados/solicitudes/${id}/estado`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ estado }),
+    });
+    return handleResponse(response);
+  },
+
+  getAsistenciasCurso: async (cursoId: number) => {
+    const response = await fetch(`${BASE_URL}/teacher/asistencias/${cursoId}`, {
+      headers: getAuthHeaders(),
+      cache: 'no-store',
+    });
+    return handleResponse(response);
+  },
 };
 
