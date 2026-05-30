@@ -81,6 +81,7 @@ export default function ConvenioCreateTeacherPage() {
                                     type="text"
                                     inputMode="numeric"
                                     pattern="[0-9]*"
+                                    maxLength={10}
                                     placeholder="Ej: 12345678" 
                                     value={cedula} 
                                     onChange={(e) => {

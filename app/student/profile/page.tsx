@@ -17,6 +17,7 @@ const API_BASE_URL = MEDIA_URL; // Define backend URL context
 export default function ProfilePage() {
     const { user, updateUser } = useAuth();
     const [nombre, setNombre] = useState('');
+    const [cedula, setCedula] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -25,6 +26,9 @@ export default function ProfilePage() {
     useEffect(() => {
         if (user?.nombre) {
             setNombre(user.nombre);
+        }
+        if (user?.cedula) {
+            setCedula(user.cedula);
         }
         if (user?.foto_perfil) {
             // Check if it's already a full URL or needs the base
@@ -57,6 +61,9 @@ export default function ProfilePage() {
         try {
             const formData = new FormData();
             formData.append('nombre', nombre);
+            if (cedula) {
+                formData.append('cedula', cedula);
+            }
             if (selectedFile) {
                 formData.append('foto_perfil', selectedFile);
             }
@@ -136,6 +143,24 @@ export default function ProfilePage() {
                                     onChange={(e) => setNombre(e.target.value)}
                                     className="h-12 border-gray-200 focus:border-[#1e3a8a] focus:ring-[#1e3a8a] rounded-xl"
                                     placeholder="Tu nombre completo"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="cedula" className="text-sm font-semibold text-gray-700">Cédula de Identidad</Label>
+                                <Input
+                                    id="cedula"
+                                    value={cedula}
+                                    type="text"
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                    maxLength={10}
+                                    onChange={(e) => {
+                                        const onlyNums = e.target.value.replace(/\D/g, '');
+                                        setCedula(onlyNums);
+                                    }}
+                                    className="h-12 border-gray-200 focus:border-[#1e3a8a] focus:ring-[#1e3a8a] rounded-xl"
+                                    placeholder="Ej: 12345678"
                                 />
                             </div>
 

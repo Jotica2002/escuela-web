@@ -251,6 +251,7 @@ def me():
     return jsonify({
         'id': usuario.id,
         'nombre': usuario.nombre,
+        'cedula': usuario.cedula,
         'email': usuario.email,
         'rol': usuario.rol,
         'foto_perfil': f'/uploads/{usuario.foto_perfil}' if usuario.foto_perfil else None
@@ -277,10 +278,26 @@ def update_profile():
         datos = request.get_json()
         if 'nombre' in datos:
             usuario.nombre = datos['nombre']
+        if 'cedula' in datos:
+            cedula_limpia = ''.join(filter(str.isdigit, datos['cedula']))
+            if len(cedula_limpia) > 10:
+                return jsonify({'error': 'La cédula no puede exceder 10 dígitos'}), 400
+            if cedula_limpia and cedula_limpia != usuario.cedula:
+                if Usuario.query.filter_by(cedula=cedula_limpia).first():
+                    return jsonify({'error': 'Esa cédula ya está registrada por otro usuario'}), 400
+            usuario.cedula = cedula_limpia
     else:
         # FormData handling for mixed Name + File
         if 'nombre' in request.form:
             usuario.nombre = request.form['nombre']
+        if 'cedula' in request.form:
+            cedula_limpia = ''.join(filter(str.isdigit, request.form['cedula']))
+            if len(cedula_limpia) > 10:
+                return jsonify({'error': 'La cédula no puede exceder 10 dígitos'}), 400
+            if cedula_limpia and cedula_limpia != usuario.cedula:
+                if Usuario.query.filter_by(cedula=cedula_limpia).first():
+                    return jsonify({'error': 'Esa cédula ya está registrada por otro usuario'}), 400
+            usuario.cedula = cedula_limpia
         
         # Profile Picture Upload Logic
         if 'foto_perfil' in request.files:
@@ -308,6 +325,7 @@ def update_profile():
             'user': {
                 'id': usuario.id,
                 'nombre': usuario.nombre,
+                'cedula': usuario.cedula,
                 'email': usuario.email,
                 'rol': usuario.rol,
                 'foto_perfil': f'/uploads/{usuario.foto_perfil}' if usuario.foto_perfil else None
