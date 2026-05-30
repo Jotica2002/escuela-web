@@ -78,9 +78,15 @@ export default function ConvenioCreateTeacherPage() {
                                 <Label htmlFor="cedula">Cédula de Identidad</Label>
                                 <Input 
                                     id="cedula" 
-                                    placeholder="Ej. V-12345678" 
+                                    type="text"
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                    placeholder="Ej: 12345678" 
                                     value={cedula} 
-                                    onChange={(e) => setCedula(e.target.value)} 
+                                    onChange={(e) => {
+                                        const onlyNums = e.target.value.replace(/\D/g, '');
+                                        setCedula(onlyNums);
+                                    }} 
                                 />
                             </div>
 

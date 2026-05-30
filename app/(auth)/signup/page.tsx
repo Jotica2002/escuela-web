@@ -83,9 +83,15 @@ export default function SignupPage() {
                 <Input
                   id="cedula"
                   type="text"
-                  placeholder="V-12345678"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="Ej: 12345678"
                   value={cedula}
-                  onChange={(e) => setCedula(e.target.value)}
+                  onChange={(e) => {
+                    // Remover cualquier caracter que no sea número
+                    const onlyNums = e.target.value.replace(/\D/g, '');
+                    setCedula(onlyNums);
+                  }}
                   required
                 />
               </div>

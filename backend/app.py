@@ -170,15 +170,20 @@ def signup():
     if not data or not data.get('email') or not data.get('password') or not data.get('nombre') or not data.get('cedula'):
         return jsonify({'error': 'Faltan campos requeridos'}), 400
     
+    # Asegurar que la cédula solo contenga números
+    cedula_limpia = ''.join(filter(str.isdigit, data['cedula']))
+    if not cedula_limpia:
+        return jsonify({'error': 'La cédula debe contener números'}), 400
+
     if Usuario.query.filter_by(email=data['email']).first():
         return jsonify({'error': 'El email ya está registrado'}), 400
         
-    if Usuario.query.filter_by(cedula=data['cedula']).first():
+    if Usuario.query.filter_by(cedula=cedula_limpia).first():
         return jsonify({'error': 'La cédula ya está registrada'}), 400
     
     usuario = Usuario(
         nombre=data['nombre'],
-        cedula=data['cedula'],
+        cedula=cedula_limpia,
         email=data['email'],
         password_hash=hash_password(data['password']),
         rol='student'  # Se fuerza el rol a estudiante por seguridad
