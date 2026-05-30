@@ -19,6 +19,7 @@ export default function ProfilePage() {
     const [nombre, setNombre] = useState('');
     const [cedula, setCedula] = useState('');
     const [isSaving, setIsSaving] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -79,6 +80,7 @@ export default function ProfilePage() {
 
             toast.success('Perfil actualizado correctamente');
             setSelectedFile(null); // Clear selected file after successful save
+            setIsEditing(false);
         } catch (error) {
             toast.error(error instanceof Error ? error.message : 'Error al actualizar el perfil');
         } finally {
@@ -103,17 +105,19 @@ export default function ProfilePage() {
                         <div className="flex flex-col sm:flex-row items-center gap-6">
 
                             {/* Avatar Picker */}
-                            <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                                <div className="w-24 h-24 bg-[#1e3a8a] rounded-full flex items-center justify-center text-white flex-shrink-0 shadow-inner overflow-hidden border-4 border-white transition-all group-hover:opacity-80">
+                            <div className={`relative group ${isEditing ? 'cursor-pointer' : ''}`} onClick={() => isEditing && fileInputRef.current?.click()}>
+                                <div className={`w-24 h-24 bg-[#1e3a8a] rounded-full flex items-center justify-center text-white flex-shrink-0 shadow-inner overflow-hidden border-4 border-white transition-all ${isEditing ? 'group-hover:opacity-80' : ''}`}>
                                     {previewUrl ? (
                                         <Image src={previewUrl} alt="Avatar" layout="fill" objectFit="cover" />
                                     ) : (
                                         <User size={40} />
                                     )}
                                 </div>
-                                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Camera size={24} className="text-white" />
-                                </div>
+                                {isEditing && (
+                                    <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Camera size={24} className="text-white" />
+                                    </div>
+                                )}
                                 <input
                                     type="file"
                                     ref={fileInputRef}
@@ -140,8 +144,9 @@ export default function ProfilePage() {
                                 <Input
                                     id="nombre"
                                     value={nombre}
+                                    disabled={!isEditing}
                                     onChange={(e) => setNombre(e.target.value)}
-                                    className="h-12 border-gray-200 focus:border-[#1e3a8a] focus:ring-[#1e3a8a] rounded-xl"
+                                    className="h-12 border-gray-200 focus:border-[#1e3a8a] focus:ring-[#1e3a8a] rounded-xl disabled:bg-gray-50 disabled:text-gray-700 disabled:opacity-100"
                                     placeholder="Tu nombre completo"
                                 />
                             </div>
@@ -151,6 +156,7 @@ export default function ProfilePage() {
                                 <Input
                                     id="cedula"
                                     value={cedula}
+                                    disabled={!isEditing}
                                     type="text"
                                     inputMode="numeric"
                                     pattern="[0-9]*"
@@ -159,7 +165,7 @@ export default function ProfilePage() {
                                         const onlyNums = e.target.value.replace(/\D/g, '');
                                         setCedula(onlyNums);
                                     }}
-                                    className="h-12 border-gray-200 focus:border-[#1e3a8a] focus:ring-[#1e3a8a] rounded-xl"
+                                    className="h-12 border-gray-200 focus:border-[#1e3a8a] focus:ring-[#1e3a8a] rounded-xl disabled:bg-gray-50 disabled:text-gray-700 disabled:opacity-100"
                                     placeholder="Ej: 12345678"
                                 />
                             </div>
@@ -177,14 +183,44 @@ export default function ProfilePage() {
                             </div>
 
                             <div className="pt-4 border-t border-gray-100 mt-6 flex flex-col sm:flex-row gap-4">
-                                <Button
-                                    type="button"
-                                    onClick={handleSave}
-                                    disabled={isSaving || (!selectedFile && nombre === user?.nombre)}
-                                    className="bg-[#f97316] hover:bg-[#ea580c] text-white px-6 h-11 rounded-xl font-medium shadow-sm transition-colors flex-1"
-                                >
-                                    {isSaving ? 'Guardando...' : 'Guardar Cambios'}
-                                </Button>
+                                {!isEditing ? (
+                                    <Button
+                                        type="button"
+                                        onClick={() => setIsEditing(true)}
+                                        className="bg-[#1e3a8a] hover:bg-[#152960] text-white px-6 h-11 rounded-xl font-medium shadow-sm transition-colors flex-1"
+                                    >
+                                        Editar Perfil
+                                    </Button>
+                                ) : (
+                                    <>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() => {
+                                                setIsEditing(false);
+                                                setNombre(user?.nombre || '');
+                                                setCedula(user?.cedula || '');
+                                                setSelectedFile(null);
+                                                if (user?.foto_perfil) {
+                                                    setPreviewUrl(user.foto_perfil.startsWith('http') ? user.foto_perfil : `${API_BASE_URL}${user.foto_perfil}`);
+                                                } else {
+                                                    setPreviewUrl(null);
+                                                }
+                                            }}
+                                            className="h-11 rounded-xl flex-1 border-gray-300"
+                                        >
+                                            Cancelar
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            onClick={handleSave}
+                                            disabled={isSaving || (!selectedFile && nombre === user?.nombre && cedula === (user?.cedula || ''))}
+                                            className="bg-[#f97316] hover:bg-[#ea580c] text-white px-6 h-11 rounded-xl font-medium shadow-sm transition-colors flex-1"
+                                        >
+                                            {isSaving ? 'Guardando...' : 'Guardar Cambios'}
+                                        </Button>
+                                    </>
+                                )}
                             </div>
                         </form>
                     </CardContent>
