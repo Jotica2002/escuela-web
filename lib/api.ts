@@ -202,6 +202,15 @@ export const api = {
     return handleResponse(response);
   },
 
+  adminUpdateUsuario: async (userId: number, data: any) => {
+    const response = await fetch(`${BASE_URL}/admin/usuarios/${userId}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
   getAdminPropuestas: async () => {
     const response = await fetch(`${BASE_URL}/admin/proposals`, {
       headers: getAuthHeaders(),

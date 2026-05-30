@@ -34,6 +34,7 @@ class Usuario(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     rol = db.Column(db.String(20), nullable=False)  # 'student' o 'teacher'
+    profesion = db.Column(db.String(100), nullable=True)
     foto_perfil = db.Column(db.String(255), nullable=True)
     creado_por_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=True)
     fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
@@ -988,12 +989,34 @@ def admin_usuarios():
             'cedula': u.cedula,
             'email': u.email,
             'rol': u.rol,
+            'profesion': u.profesion,
             'creado_por_id': u.creado_por_id,
             'creado_por_nombre': creador_nombre,
             'fecha_creacion': u.fecha_creacion.isoformat()
         })
         
     return jsonify(result), 200
+
+@app.route('/api/admin/usuarios/<int:user_id>', methods=['PUT'])
+def admin_editar_usuario(user_id):
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not token:
+        return jsonify({'error': 'Token requerido'}), 401
+    
+    payload = verify_token(token)
+    if not payload or payload['rol'] != 'admin':
+        return jsonify({'error': 'No autorizado'}), 403
+        
+    usuario = Usuario.query.get(user_id)
+    if not usuario:
+        return jsonify({'error': 'Usuario no encontrado'}), 404
+        
+    data = request.get_json()
+    if 'profesion' in data:
+        usuario.profesion = data['profesion']
+        
+    db.session.commit()
+    return jsonify({'mensaje': 'Usuario actualizado correctamente'}), 200
 
 @app.route('/api/admin/cursos', methods=['GET'])
 def admin_cursos():

@@ -12,6 +12,7 @@ interface Usuario {
     nombre: string;
     email: string;
     rol: string;
+    profesion?: string;
     creado_por_id: number | null;
     creado_por_nombre: string | null;
 }
@@ -19,6 +20,19 @@ interface Usuario {
 export default function AdminUsersPage() {
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [editingUserId, setEditingUserId] = useState<number | null>(null);
+    const [editProfesion, setEditProfesion] = useState('');
+
+    const handleSaveProfesion = async (userId: number) => {
+        try {
+            await api.adminUpdateUsuario(userId, { profesion: editProfesion });
+            toast.success('Profesión actualizada correctamente');
+            setEditingUserId(null);
+            cargarUsuarios();
+        } catch (error) {
+            toast.error('Error al actualizar la profesión');
+        }
+    };
 
     const cargarUsuarios = async () => {
         setIsLoading(true);
@@ -87,6 +101,7 @@ export default function AdminUsersPage() {
                                         <th className="px-6 py-4">Nombre Completo</th>
                                         <th className="px-6 py-4">Email</th>
                                         <th className="px-6 py-4">Rol</th>
+                                        <th className="px-6 py-4">Profesión</th>
                                         <th className="px-6 py-4">Creado Por</th>
                                     </tr>
                                 </thead>
@@ -96,6 +111,50 @@ export default function AdminUsersPage() {
                                             <td className="px-6 py-4 font-medium text-gray-900">{user.nombre}</td>
                                             <td className="px-6 py-4 text-gray-500">{user.email}</td>
                                             <td className="px-6 py-4">{getRoleBadge(user.rol)}</td>
+                                            <td className="px-6 py-4">
+                                                {(user.rol === 'teacher' || user.rol === 'profesor') ? (
+                                                    editingUserId === user.id ? (
+                                                        <div className="flex items-center gap-2">
+                                                            <input 
+                                                                type="text" 
+                                                                value={editProfesion}
+                                                                onChange={(e) => setEditProfesion(e.target.value)}
+                                                                className="border border-gray-300 rounded px-2 py-1 text-xs w-32 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                                placeholder="Ej: Ingeniero"
+                                                            />
+                                                            <button 
+                                                                onClick={() => handleSaveProfesion(user.id)}
+                                                                className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
+                                                            >
+                                                                Guardar
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => setEditingUserId(null)}
+                                                                className="text-xs text-gray-500 hover:text-gray-700"
+                                                            >
+                                                                Cancelar
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex items-center gap-2 group">
+                                                            <span className="text-sm text-gray-700">
+                                                                {user.profesion || <span className="text-gray-400 italic">No asignada</span>}
+                                                            </span>
+                                                            <button 
+                                                                onClick={() => {
+                                                                    setEditingUserId(user.id);
+                                                                    setEditProfesion(user.profesion || '');
+                                                                }}
+                                                                className="text-xs text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity underline"
+                                                            >
+                                                                Editar
+                                                            </button>
+                                                        </div>
+                                                    )
+                                                ) : (
+                                                    <span className="text-xs text-gray-400">-</span>
+                                                )}
+                                            </td>
                                             <td className="px-6 py-4">
                                                 {user.creado_por_nombre ? (
                                                     <span className="text-xs font-semibold bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
@@ -109,7 +168,7 @@ export default function AdminUsersPage() {
                                     ))}
                                     {usuarios.filter(u => u.rol !== 'student').length === 0 && (
                                         <tr>
-                                            <td colSpan={4} className="text-center py-8 text-gray-500">
+                                            <td colSpan={5} className="text-center py-8 text-gray-500">
                                                 No hay usuarios registrados (excluyendo estudiantes).
                                             </td>
                                         </tr>
