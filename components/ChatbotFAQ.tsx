@@ -72,6 +72,12 @@ const FAQS: FAQ[] = [
     pregunta: '¿A quién contacto si tengo problemas técnicos?',
     respuesta: 'Si experimentas problemas técnicos, puedes contactar al administrador del sistema. El equipo de soporte revisará tu caso y te ayudará a resolverlo lo antes posible.',
     categoria: 'Soporte'
+  },
+  {
+    id: '11',
+    pregunta: '¿Dónde puedo ver los horarios de mis cursos?',
+    respuesta: 'Puedes ver los horarios de los cursos en los que estás inscrito yendo a la sección "Mis Cursos". Despliega los detalles del curso y haz clic en "Ver Horario" para conocer los días, horas y descargar cualquier archivo que haya dejado el profesor.',
+    categoria: 'Cursos'
   }
 ];
 
