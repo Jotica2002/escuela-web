@@ -24,6 +24,7 @@ const navItems = [
     { name: 'Estadísticas', href: '/admin', icon: BarChart3 },
     { name: 'Crear Curso', href: '/admin/courses', icon: BookOpen },
     { name: 'Votación de Cursos', href: '/admin/votaciones', icon: TrendingUp },
+    { name: 'Solicitar Cursos', href: '/admin/solicitudes', icon: FileText },
     { name: 'Crear Usuario', href: '/admin/users', icon: UserPlus },
     { name: 'Certificados', href: '/admin/certificados', icon: FileBadge },
 ];

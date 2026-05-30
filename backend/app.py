@@ -103,6 +103,15 @@ class SolicitudCertificado(db.Model):
     estado = db.Column(db.String(20), default='pendiente') # 'pendiente', 'aprobada', 'rechazada'
     fecha_solicitud = db.Column(db.DateTime, default=datetime.utcnow)
 
+class SolicitudCurso(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(150), nullable=False)
+    descripcion = db.Column(db.Text, nullable=False)
+    requisitos = db.Column(db.Text)
+    estado = db.Column(db.String(20), default='abierta') # 'abierta', 'cerrada'
+    convenio_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=True) # Null = todos los convenios
+    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+
 class Asistencia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     curso_id = db.Column(db.Integer, db.ForeignKey('curso.id'), nullable=False)
@@ -1788,6 +1797,104 @@ def update_estado_solicitud_certificado(id):
         return jsonify({'message': 'Estado actualizado'}), 200
     
     return jsonify({'error': 'Estado no proporcionado'}), 400
+# -------- Solicitudes a Convenios --------
+
+@app.route('/api/admin/solicitudes', methods=['GET'])
+def admin_get_solicitudes():
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not token: return jsonify({'error': 'Token requerido'}), 401
+    payload = verify_token(token)
+    if not payload or payload['rol'] != 'admin': return jsonify({'error': 'No autorizado'}), 403
+
+    solicitudes = SolicitudCurso.query.order_by(SolicitudCurso.fecha_creacion.desc()).all()
+    result = []
+    for s in solicitudes:
+        conv = Usuario.query.get(s.convenio_id) if s.convenio_id else None
+        result.append({
+            'id': s.id,
+            'titulo': s.titulo,
+            'descripcion': s.descripcion,
+            'requisitos': s.requisitos,
+            'estado': s.estado,
+            'convenio_id': s.convenio_id,
+            'convenio_nombre': conv.nombre if conv else 'Todos los convenios',
+            'fecha_creacion': s.fecha_creacion.isoformat()
+        })
+    return jsonify(result), 200
+
+@app.route('/api/admin/solicitudes', methods=['POST'])
+def admin_create_solicitud():
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not token: return jsonify({'error': 'Token requerido'}), 401
+    payload = verify_token(token)
+    if not payload or payload['rol'] != 'admin': return jsonify({'error': 'No autorizado'}), 403
+
+    data = request.get_json()
+    if not data or not data.get('titulo') or not data.get('descripcion'):
+        return jsonify({'error': 'Título y descripción requeridos'}), 400
+
+    nueva_solicitud = SolicitudCurso(
+        titulo=data['titulo'],
+        descripcion=data['descripcion'],
+        requisitos=data.get('requisitos', ''),
+        convenio_id=data.get('convenio_id') or None
+    )
+    db.session.add(nueva_solicitud)
+    db.session.commit()
+    return jsonify({'message': 'Solicitud creada con éxito'}), 201
+
+@app.route('/api/admin/solicitudes/<int:id>/estado', methods=['PUT'])
+def admin_update_solicitud_estado(id):
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not token: return jsonify({'error': 'Token requerido'}), 401
+    payload = verify_token(token)
+    if not payload or payload['rol'] != 'admin': return jsonify({'error': 'No autorizado'}), 403
+
+    solicitud = SolicitudCurso.query.get(id)
+    if not solicitud: return jsonify({'error': 'Solicitud no encontrada'}), 404
+
+    data = request.get_json()
+    if 'estado' in data:
+        solicitud.estado = data['estado']
+        db.session.commit()
+        return jsonify({'message': 'Estado actualizado'}), 200
+    return jsonify({'error': 'Estado no proporcionado'}), 400
+
+@app.route('/api/convenio/solicitudes', methods=['GET'])
+def convenio_get_solicitudes():
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not token: return jsonify({'error': 'Token requerido'}), 401
+    payload = verify_token(token)
+    if not payload or payload['rol'] != 'convenio': return jsonify({'error': 'No autorizado'}), 403
+
+    convenio_id = payload['id']
+    solicitudes = SolicitudCurso.query.filter(
+        db.or_(SolicitudCurso.convenio_id == convenio_id, SolicitudCurso.convenio_id == None)
+    ).order_by(SolicitudCurso.fecha_creacion.desc()).all()
+    
+    result = []
+    for s in solicitudes:
+        result.append({
+            'id': s.id,
+            'titulo': s.titulo,
+            'descripcion': s.descripcion,
+            'requisitos': s.requisitos,
+            'estado': s.estado,
+            'dirigido_a': 'Específicamente a ti' if s.convenio_id == convenio_id else 'Todos los convenios',
+            'fecha_creacion': s.fecha_creacion.isoformat()
+        })
+    return jsonify(result), 200
+
+@app.route('/api/admin/convenios', methods=['GET'])
+def admin_get_convenios():
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not token: return jsonify({'error': 'Token requerido'}), 401
+    payload = verify_token(token)
+    if not payload or payload['rol'] != 'admin': return jsonify({'error': 'No autorizado'}), 403
+    
+    convenios = Usuario.query.filter_by(rol='convenio').all()
+    result = [{'id': c.id, 'nombre': c.nombre} for c in convenios]
+    return jsonify(result), 200
 
 # ==================== ERROR HANDLERS ====================
 

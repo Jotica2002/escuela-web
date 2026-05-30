@@ -470,5 +470,48 @@ export const api = {
     });
     return handleResponse(response);
   },
+
+  // ========== SOLICITUDES A CONVENIOS ==========
+  adminGetSolicitudes: async () => {
+    const response = await fetch(`${BASE_URL}/admin/solicitudes`, {
+      headers: getAuthHeaders(),
+      cache: 'no-store',
+    });
+    return handleResponse(response);
+  },
+
+  adminCreateSolicitud: async (data: any) => {
+    const response = await fetch(`${BASE_URL}/admin/solicitudes`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
+  adminUpdateSolicitudEstado: async (id: number, estado: string) => {
+    const response = await fetch(`${BASE_URL}/admin/solicitudes/${id}/estado`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ estado }),
+    });
+    return handleResponse(response);
+  },
+
+  convenioGetSolicitudes: async () => {
+    const response = await fetch(`${BASE_URL}/convenio/solicitudes`, {
+      headers: getAuthHeaders(),
+      cache: 'no-store',
+    });
+    return handleResponse(response);
+  },
+
+  adminGetConvenios: async () => {
+    const response = await fetch(`${BASE_URL}/admin/convenios`, {
+      headers: getAuthHeaders(),
+      cache: 'no-store',
+    });
+    return handleResponse(response);
+  },
 };
 

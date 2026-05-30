@@ -15,7 +15,8 @@ import {
     LogOut,
     Menu,
     X,
-    Building2
+    Building2,
+    FileText
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -23,6 +24,7 @@ const navItems = [
     { name: 'Dashboard', href: '/convenio', icon: LayoutDashboard },
     { name: 'Mis Propuestas', href: '/convenio/propuestas', icon: ListChecks },
     { name: 'Nueva Propuesta', href: '/convenio/nueva', icon: FilePlus },
+    { name: 'Solicitudes Admin', href: '/convenio/solicitudes', icon: FileText },
     { name: 'Crear Profesor', href: '/convenio/teachers', icon: UserPlus },
     { name: 'Perfil', href: '/convenio/perfil', icon: User },
 ];

@@ -29,6 +29,20 @@ export default function NuevaPropuestaPage() {
         api.convenioGetMyTeachers()
             .then(data => setProfesores(data))
             .catch(() => {});
+
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const tituloSugerido = params.get('titulo_sugerido');
+            const descSugerida = params.get('descripcion_sugerida');
+            
+            if (tituloSugerido || descSugerida) {
+                setForm(f => ({
+                    ...f,
+                    titulo: tituloSugerido || f.titulo,
+                    descripcion: descSugerida || f.descripcion
+                }));
+            }
+        }
     }, []);
 
     const handleProfesorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
