@@ -104,7 +104,14 @@ export default function TeacherProfilePage() {
                             <div className="text-center sm:text-left">
                                 <CardTitle className="text-2xl font-bold text-gray-900">{user?.nombre || 'Profesor'}</CardTitle>
                                 <CardDescription className="text-[#1e3a8a] font-semibold text-sm mt-1 flex items-center gap-1 justify-center sm:justify-start">
-                                    <GraduationCap size={14} /> Docente / Instructor
+                                    <GraduationCap size={14} /> 
+                                    {user?.profesion ? (
+                                        <span>{user.profesion}</span>
+                                    ) : (
+                                        <span className="text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md text-xs border border-amber-200 ml-1">
+                                            Sin profesión (Esperando asignación)
+                                        </span>
+                                    )}
                                 </CardDescription>
                                 {selectedFile && <span className="text-xs text-blue-600 font-semibold mt-2 inline-block">Nueva imagen seleccionada (sin guardar)</span>}
                             </div>

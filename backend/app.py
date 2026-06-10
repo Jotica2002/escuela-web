@@ -222,7 +222,8 @@ def signup():
             'nombre': usuario.nombre,
             'cedula': usuario.cedula,
             'email': usuario.email,
-            'rol': usuario.rol
+            'rol': usuario.rol,
+            'profesion': usuario.profesion
         }
     }), 201
 
@@ -249,6 +250,7 @@ def login():
             'cedula': usuario.cedula,
             'email': usuario.email,
             'rol': usuario.rol,
+            'profesion': usuario.profesion,
             'foto_perfil': f'/uploads/{usuario.foto_perfil}' if usuario.foto_perfil else None
         }
     }), 200
@@ -274,6 +276,7 @@ def me():
         'cedula': usuario.cedula,
         'email': usuario.email,
         'rol': usuario.rol,
+        'profesion': usuario.profesion,
         'foto_perfil': f'/uploads/{usuario.foto_perfil}' if usuario.foto_perfil else None
     }), 200
 
@@ -353,6 +356,7 @@ def update_profile():
                 'cedula': usuario.cedula,
                 'email': usuario.email,
                 'rol': usuario.rol,
+                'profesion': usuario.profesion,
                 'foto_perfil': f'/uploads/{usuario.foto_perfil}' if usuario.foto_perfil else None
             }
         }), 200

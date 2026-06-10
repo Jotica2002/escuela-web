@@ -9,6 +9,7 @@ export interface User {
   cedula?: string;
   email: string;
   rol: 'student' | 'teacher' | 'admin' | 'convenio';
+  profesion?: string;
   foto_perfil?: string;
   creado_por_id?: number;
   creado_por_nombre?: string;
