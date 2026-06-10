@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User, Camera, Mail, GraduationCap } from 'lucide-react';
+import { User, Camera, Mail, GraduationCap, Lock, IdCard } from 'lucide-react';
 import Image from 'next/image';
 
 const API_BASE_URL = MEDIA_URL;
@@ -16,6 +16,8 @@ const API_BASE_URL = MEDIA_URL;
 export default function TeacherProfilePage() {
     const { user, updateUser } = useAuth();
     const [nombre, setNombre] = useState('');
+    const [cedula, setCedula] = useState('');
+    const [password, setPassword] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -23,6 +25,7 @@ export default function TeacherProfilePage() {
 
     useEffect(() => {
         if (user?.nombre) setNombre(user.nombre);
+        if (user?.cedula) setCedula(user.cedula);
         if (user?.foto_perfil) {
             const avatarUrl = user.foto_perfil.startsWith('http')
                 ? user.foto_perfil
@@ -46,12 +49,15 @@ export default function TeacherProfilePage() {
         try {
             const formData = new FormData();
             formData.append('nombre', nombre);
+            if (cedula) formData.append('cedula', cedula);
+            if (password) formData.append('password', password);
             if (selectedFile) formData.append('foto_perfil', selectedFile);
             const response = await api.updateProfileImage(formData);
             if (response?.user) updateUser(response.user);
-            else updateUser({ nombre });
+            else updateUser({ nombre, cedula });
             toast.success('Perfil actualizado correctamente');
             setSelectedFile(null);
+            setPassword(''); // Clear password field after saving
         } catch (error) {
             toast.error(error instanceof Error ? error.message : 'Error al actualizar el perfil');
         } finally {
@@ -121,6 +127,33 @@ export default function TeacherProfilePage() {
                             </div>
 
                             <div className="space-y-2">
+                                <Label htmlFor="cedula" className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                                    <IdCard size={14} /> Cédula de Identidad
+                                </Label>
+                                <Input
+                                    id="cedula"
+                                    value={cedula}
+                                    onChange={(e) => setCedula(e.target.value)}
+                                    className="h-12 border-gray-200 focus:border-[#1e3a8a] focus:ring-[#1e3a8a] rounded-xl"
+                                    placeholder="Tu número de cédula"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="password" className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                                    <Lock size={14} /> Nueva Contraseña
+                                </Label>
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="h-12 border-gray-200 focus:border-[#1e3a8a] focus:ring-[#1e3a8a] rounded-xl"
+                                    placeholder="Dejar en blanco para no cambiar"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
                                 <Label htmlFor="email" className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
                                     <Mail size={14} /> Correo Electrónico
                                 </Label>
@@ -138,7 +171,7 @@ export default function TeacherProfilePage() {
                                 <Button
                                     type="button"
                                     onClick={handleSave}
-                                    disabled={isSaving || (!selectedFile && nombre === user?.nombre)}
+                                    disabled={isSaving || (!selectedFile && nombre === user?.nombre && cedula === (user?.cedula || '') && !password)}
                                     className="bg-[#1e3a8a] hover:bg-[#152960] text-white px-8 h-11 rounded-xl font-semibold shadow-sm transition-colors w-full sm:w-auto"
                                 >
                                     {isSaving ? 'Guardando...' : 'Guardar Cambios'}

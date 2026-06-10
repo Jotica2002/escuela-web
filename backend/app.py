@@ -306,6 +306,8 @@ def update_profile():
                 if Usuario.query.filter_by(cedula=cedula_limpia).first():
                     return jsonify({'error': 'Esa cédula ya está registrada por otro usuario'}), 400
             usuario.cedula = cedula_limpia
+        if 'password' in datos and datos['password']:
+            usuario.password_hash = hash_password(datos['password'])
     else:
         # FormData handling for mixed Name + File
         if 'nombre' in request.form:
@@ -318,6 +320,9 @@ def update_profile():
                 if Usuario.query.filter_by(cedula=cedula_limpia).first():
                     return jsonify({'error': 'Esa cédula ya está registrada por otro usuario'}), 400
             usuario.cedula = cedula_limpia
+            
+        if 'password' in request.form and request.form['password']:
+            usuario.password_hash = hash_password(request.form['password'])
         
         # Profile Picture Upload Logic
         if 'foto_perfil' in request.files:
